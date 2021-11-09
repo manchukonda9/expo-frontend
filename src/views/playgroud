@@ -1,0 +1,153 @@
+constructor(props) {
+    super(props);
+    this.state = {
+      products: [],
+      address:[],
+      oldCart:{},
+      productsAll: [],
+      updateProd:[],
+      loggedin:false,
+      errAlert:'',
+      notify:0
+    };
+  }
+
+  componentDidMount () {
+    const Bearer = "Bearer "+ Cookies.get('token')
+    console.log(Bearer)
+    let axiosConfig = {
+     headers: {
+         'Content-Type': 'application/json;charset=UTF-8',
+         "Authorization" : Bearer
+     }
+   };
+ 
+          if(!Cookies.get('token')){
+          this.setState.loggedin = true
+          this.state.errAlert = "error"
+          this.state.message ="Only vendors can add products"
+         
+      }
+
+
+    axios
+      .get(`https://eshop-spot-backend.herokuapp.com/product/all`)
+      .then(response => {
+        console.log("response" + response.data);
+        this.setState({ products: response.data });
+        this.setState({ productsAll: response.data });
+
+
+        for(var i =0;i<this.state.productsAll.length;i++){
+    
+          for(var j=0;j<this.state.oldCart[0].productlist.length;j++){
+              
+            if(this.state.productsAll[i]._id == this.state.oldCart[0].productlist[j].product){
+                var tempJson = {
+                    "id":this.state.productsAll[i]._id,
+                    "quantity": this.state.productsAll.quantity - this.state.oldCart[0].productlist[j].quantity,
+                   
+
+                }
+                this.setState({ updateProd: [...this.state.updateProd, tempJson] })
+
+            }
+            
+          }
+          console.log(this.state.updateProd,"tab")
+      }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+
+
+
+
+
+      try{
+      
+        axios.get("https://eshop-spot-backend.herokuapp.com/customers/myCart",axiosConfig, {
+        withCredentials: true
+        
+    }).then(resposne =>{
+      this.setState({ oldCart: resposne.data });
+      this.setState({notify: this.state.oldCart[0].productlist.length})
+
+      console.log(this.state.oldCart[0].productlist)
+    })
+  
+      
+      
+  
+      // 
+      // this.setState({}) SET PRODTABLE DATA HERE
+  }catch(e){
+         
+       
+      this.setState.loggedin = true
+      this.state.errAlert = "error"
+      this.state.message ="Only vendors can add products"
+      console.log("in error")
+      console.log(e)
+  }
+
+
+
+  axios.get("https://eshop-spot-backend.herokuapp.com/addresses/mine",axiosConfig,{
+    withCredentials: true
+}).then(response =>{
+console.log(response.data)
+this.setState({address:response.data})
+}).catch(error => {
+    this.setState({loggedin:true})
+    this.setState({errAlert:"error"})
+    this.setState({message:"Something went wrong"})
+    console.log(error);
+  });;
+
+
+
+ 
+  }
+
+
+
+
+  for(var j=0;j<ordProds;j++){
+    // console.log("In prodslist",ords[i].productlist[j])
+        for( var k=0;k<vendProds.length;k++){
+            if(vendProds[k] == ordProds[j].product){
+                total = total + (vendProds[k].price * ordProds[j].quantity)
+                prodsol = prodsol + ordProds[j].quantity
+                popProd.push(vendProds[k])
+                console.log("In if condition")
+            
+                temp ={
+                    "order_id":ords[i]._id,
+                    "productName":myProds[k].name,
+                    "quantity":myProds[k].quantity,
+                    "price":myProds[k].price,
+                    "product_id":myProds[k]._id,
+                    "OrderStatus":ord[i].productlist[k].status
+
+
+                }
+                resList.push(temp)
+
+            }
+        }
+    }
+
+
+
+
+
+
+    <Box sx={{ display: 'flex' }}>
+    <CssBaseline />
+  
+      
+    
+   
